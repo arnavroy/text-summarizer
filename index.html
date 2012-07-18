@@ -27,6 +27,24 @@
 			var summarizeButton = $("#summarizeButton")[0]; 
 			var inputText = $("#input")[0];
 			var outputText = $("#output")[0];
+			
+			// On focus the default input text should go away.
+			$(inputText).focus(function() {
+			  console.log("Focus event!");
+		   	  console.log($(inputText).val());	
+			  if ($(inputText).val() == "Insert the text to be summarized here...") {
+			    $(inputText).val("");
+			  }
+			});	
+
+			// On blur the default input text should be injected.
+			$(inputText).blur(function() {
+			  console.log("Blur event!");
+		   	  console.log($(inputText).val());	
+			  if ($(inputText).val() == "") {
+			    $(inputText).val("Insert the text to be summarized here...");
+			  }
+			});	
 			$(summarizeButton).on("click", function(event){
         var inputToSummarize = $.trim($(inputText).val());
 				if (inputToSummarize.length == 0) {
@@ -60,7 +78,7 @@
 					});
 					var finalResult = "";
 					for (var idx = 0; idx < halfNumLines; ++idx) {
-						finalResult += arr[idx].sentence + ". ";
+						finalResult += arr[idx].sentence + ".\n";
 					}
 					$(outputText).val(finalResult);
 				}
@@ -79,7 +97,7 @@
 						<!--<form class="form-horizontal">-->
 						  <div class="control-group">
      					  <div class="controls">
-        					<textarea rows="20" class="span4" class="input-xlarge" id="input">Input</textarea>
+        					<textarea rows="20" class="span4" class="input-xlarge" id="input">Insert the text to be summarized here...</textarea>
       					</div>
     					</div>	
 						<!--</form>-->
@@ -93,7 +111,7 @@
 
  			      <div class="control-group">
 			    		<div class="controls">
-   		    			<textarea rows="20" class="span4" class="input-xlarge" id="output">Output</textarea>
+   		    			<textarea rows="20" class="span4" class="input-xlarge" id="output">Expect the generated summary here...</textarea>
  			    		</div>
     			 	</div>	
           </div>
