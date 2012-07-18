@@ -15,7 +15,14 @@ Summarizer.Utility.getTextFromHtml = function(someHtmlDoc) {
 
 // Get sentences from text.
 Summarizer.Utility.getSentences = function(text) {
-  return text.split("."); // Also include other punctuations.
+  var sentences = text.split(/\. |\.|\?|!|\n/g); 
+  $(sentences).each(function(idx) {
+	sentences[idx] = $.trim(sentences[idx]);
+  });
+  sentences = $(sentences).filter(function(idx) {
+		return sentences[idx].length > 0;
+	});
+  return sentences;
 }
 
 // Calculate similarity between 2 sentences.
@@ -23,7 +30,6 @@ Summarizer.Utility.calculateSimilarity = function(sentence1, sentence2) {
   var words1 = sentence1.split(" ");
   var words2 = sentence2.split(" ");
   var intersection = _.intersection(words1, words2);
-  // _.each(intersection, function(i) {console.log(" " + i  + " ");});
   var sumOfLengths = Math.log(words1.length) + Math.log(words2.length);
   if (sumOfLengths == 0) {
     return 0;
@@ -78,7 +84,6 @@ Summarizer.Utility.calculatePageRank = function(graph, maxIterations, dampingFac
   var converged = false;
   for(var iter = 0; iter < maxIterations; ++iter) {
     maxPRChange = Summarizer.Utility.runPageRankOnce(graph, pageRankStruct, totalWeight, totalNumNodes, dampingFactor);
-    console.log("Iter : " + iter);
     if (maxPRChange <= (delta / totalNumNodes)) {
       converged = true;
       break;
@@ -104,12 +109,12 @@ Summarizer.Utility.runPageRankOnce = function(graph, pageRankStruct, totalWeight
     var wt = 0.0;
     // Now iterate over all the nodes that are pointing to this node.
     _.each(graph[idx], function(adjNode) {
-
       var node = adjNode["node"];
       // Get the total weight shared by this adjacent node and its neighbours.
       var sharedWt = totalWeight[node];
-      wt += (adjNode["weight"] / sharedWt) * pageRankStruct[node]["oldPR"];
-
+      if (sharedWt != 0) { // To prevent NaN
+        wt += (adjNode["weight"] / sharedWt) * pageRankStruct[node]["oldPR"];
+      }
     });
     wt *= dampingFactor;
     wt += (1 - dampingFactor);

@@ -1,9 +1,105 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <script type="text/javascript"
-      src="http://underscorejs.org/underscore.js"></script>
-    <script type="text/javascript"
-      src="file:///home/arnavroy/sandbox/Summarize/summarizer.js"></script>
+   <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+   <style>
+		.container {
+      margin-top: 5%;
+			text-align: center;
+		}
+		.subContainer {
+      margin-top: 5%;
+		}
+ 	 </style>
+   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+	</script>
+   <script src="bootstrap/js/bootstrap.js" type="text/javascript"></script>
+   <script type="text/javascript"
+     src="http://underscorejs.org/underscore.js"></script>
+   <script type="text/javascript"
+     src="summarizer.js"></script>
+	 <script type="text/javascript">
+		$(document).ready(initJS);
+    function initJS() {
+			// Configure this object for tweaking summarization params.
+      var configObj = {"maxIter":100, "dampingFactor": 0.85, "delta": 0.5};
+
+			var summarizeButton = $("#summarizeButton")[0]; 
+			var inputText = $("#input")[0];
+			var outputText = $("#output")[0];
+			$(summarizeButton).on("click", function(event){
+        var inputToSummarize = $.trim($(inputText).val());
+				if (inputToSummarize.length == 0) {
+					$(outputText).val("No text to be summarized...");
+				} else {
+					// Invoke the summarizer algo.
+					var sentences = Summarizer.Utility.getSentences(inputToSummarize);
+					var graph = Summarizer.Utility.makeGraph(sentences);
+					var result = Summarizer.Utility.calculatePageRank(graph, configObj.maxIter,
+											 configObj.dampingFactor, configObj.delta);
+					
+ 					var arr = [];
+					var idx = 0;
+					_.each(result, function(v, k) {
+						arr.push({"sentence": v.sentence, "PR": v.PR, "idx": idx++});
+						console.log("sentence: " + v.sentence + ", PR: " + v.PR);
+					});
+					// Sort in descending order of PR.
+					arr = arr.sort(function(a, b) {
+						return b.PR - a.PR;
+					});
+					// Just returning half the original number of lines.
+					var halfNumLines = Math.floor(arr.length / 2);
+					if (halfNumLines == 0) {
+						halfNumLines = arr.length;
+					}
+					// Collect the half number of lines and sort them according to their occurence in the original text.
+					arr = arr.splice(0, halfNumLines);
+					arr = arr.sort(function(a, b) {
+						return a.idx - b.idx;
+					});
+					var finalResult = "";
+					for (var idx = 0; idx < halfNumLines; ++idx) {
+						finalResult += arr[idx].sentence + ". ";
+					}
+					$(outputText).val(finalResult);
+				}
+      });
+    }
+	 </script>
   </head>
-  <body></body>
+  <body>
+  <div class="container">
+    <strong><h2>Text summarization on the client side</h2></strong>
+		<div class="row subContainer">
+			<div class="span12">
+				<div class="row">
+					<div class="span4">
+
+						<!--<form class="form-horizontal">-->
+						  <div class="control-group">
+     					  <div class="controls">
+        					<textarea rows="20" class="span4" class="input-xlarge" id="input">Input</textarea>
+      					</div>
+    					</div>	
+						<!--</form>-->
+          </div>
+
+ 					<div class="span4">
+					
+  					<button id="summarizeButton" class="button">Summarize</button>
+					</div>
+					<div class="span4">
+
+ 			      <div class="control-group">
+			    		<div class="controls">
+   		    			<textarea rows="20" class="span4" class="input-xlarge" id="output">Output</textarea>
+ 			    		</div>
+    			 	</div>	
+          </div>
+				</div>
+			</div>
+		</div>	
+  </div>
+  </body>
 </html>
