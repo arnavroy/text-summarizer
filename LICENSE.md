@@ -1,13 +1,1 @@
-[![Creative Commons License][]][]  
-<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">TextSummarizer</span>
-by [Arnav Roy][] is licensed under a [Creative Commons
-Attribution-ShareAlike 3.0 Unported License][![Creative Commons
-License][]].  
-Based on a work at [github.com][Arnav Roy].  
-Permissions beyond the scope of this license may be available at
-[http://about.me/arnavroy][].
-
-  [Creative Commons License]: http://i.creativecommons.org/l/by-sa/3.0/88x31.png
-  [![Creative Commons License][]]: http://creativecommons.org/licenses/by-sa/3.0/
-  [Arnav Roy]: https://github.com/arnavroy/TextSummarizer
-  [http://about.me/arnavroy]: http://about.me/arnavroy
+MIT: http://arnavroy.mit-license.org
